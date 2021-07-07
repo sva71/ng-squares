@@ -1,0 +1,33 @@
+<div class="container">
+
+    <div class="title">
+        <div>
+            Your name: <input type="text" [(ngModel)]="playerName">
+        </div>
+        <button>Begin!</button>
+        <div>
+            Delay, ms: <input type="text" [(ngModel)]="delay">
+        </div>
+    </div>
+
+    <div class="game__block">
+
+        <div class="score__block">
+            <p class="player-name">{{ playerName }}</p>
+            <p class="player-score">{{ playerScore }}</p>
+        </div>
+
+        <div class="game__field">
+            <div class="game__field-row" *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
+                <app-square *ngFor="let item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"></app-square>
+            </div>
+        </div>
+
+        <div class="score__block">
+            <p class="player-name">Computer</p>
+            <p class="player-score">{{ compScore }}</p>
+        </div>
+
+    </div>
+
+</div>
