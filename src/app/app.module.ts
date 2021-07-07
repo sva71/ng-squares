@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { FormsModule } from "@angular/forms";
 import { SquareComponent } from './square/square.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
@@ -12,7 +13,8 @@ import { SquareComponent } from './square/square.component';
     ],
     imports: [
         BrowserModule,
-        FormsModule
+        FormsModule,
+        NgbModule
     ],
     providers: [],
     bootstrap: [AppComponent]
