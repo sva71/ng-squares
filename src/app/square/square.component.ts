@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {CLICKABLE_COLOR} from "../app.component";
 
 @Component({
-  selector: 'app-square',
-  templateUrl: './square.component.html',
-  styleUrls: ['./square.component.sass']
+    selector: 'app-square',
+    templateUrl: './square.component.html',
+    styleUrls: ['./square.component.sass']
 })
-export class SquareComponent implements OnInit {
+export class SquareComponent {
 
-  constructor() { }
+    @Input() color: string
+    @Output() onClicked = new EventEmitter<any>()
 
-  ngOnInit(): void {
-  }
+    clickHandle() {
+        (this.color === CLICKABLE_COLOR) && this.onClicked.emit()
+    }
 
 }
