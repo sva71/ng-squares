@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {CLICKABLE_COLOR, COMP_COLOR, DataService, INITIAL_COLOR, PLAYER_COLOR, Scores} from "./data.service";
 
 declare var $: any;
 
@@ -7,11 +8,6 @@ interface Cell {
     col: number
 }
 
-export const INITIAL_COLOR: string = 'cornflowerblue';
-export const CLICKABLE_COLOR: string = 'yellow'
-export const PLAYER_COLOR: string = 'green'
-export const COMP_COLOR: string = 'maroon'
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -19,37 +15,39 @@ export const COMP_COLOR: string = 'maroon'
 })
 export class AppComponent implements OnInit {
 
-    delay: number = 1000
-    playerScore: number = 0
-    compScore: number = 0
-    finalText: string = ''
+    constructor(private dataService: DataService) {  }
 
-    initialColor: string = INITIAL_COLOR
-    playerColor: string = PLAYER_COLOR
-    compColor: string = COMP_COLOR
+    colors = {
+        initialColor: INITIAL_COLOR,
+        clickableColor: CLICKABLE_COLOR,
+        playerColor: PLAYER_COLOR,
+        compColor: COMP_COLOR
+    }
+
+    delay: number = 1000
+    scores: Scores
+
+    finalText: string = ''
 
     game: boolean = false
     clickTimer: number
 
-    field: Array<string>[] = new Array(10)
+    field: Array<string>[]
 
     ngOnInit() {
-        for (let i: number = 0; i < 10; i++)
-            this.field[i] = new Array(10).fill(INITIAL_COLOR)
+        this.scores = this.dataService.getScores();
+        this.field = this.dataService.getField();
     }
 
     resetGame() {
-        for (let i: number = 0; i < 10; i++)
-            for (let j: number = 0; j < 10; j++)
-                this.field[i][j] = this.initialColor;
-        this.compScore = 0;
-        this.playerScore = 0;
+        this.field = this.dataService.resetField();
+        this.scores = this.dataService.resetScores();
         this.game = false;
     }
 
     gameOver(win: boolean) {
-        win ? this.finalText = `${this.playerScore} : ${this.compScore}. Congratulations, you win!` :
-            this.finalText = `${this.playerScore} : ${this.compScore}. Sorry, you lose!`;
+        win ? this.finalText = `${this.scores.playerScore} : ${this.scores.compScore}. Congratulations, you win!` :
+            this.finalText = `${this.scores.playerScore} : ${this.scores.compScore}. Sorry, you lose!`;
         $('#myModal').modal('show');
         this.resetGame();
     }
@@ -59,7 +57,7 @@ export class AppComponent implements OnInit {
         do {
             x = Math.floor(Math.random() * 10);
             y = Math.floor(Math.random() * 10);
-        } while (this.field[x][y] !== INITIAL_COLOR);
+        } while (this.field[x][y] !== this.colors.initialColor);
         return {
             row: x,
             col: y
@@ -69,19 +67,19 @@ export class AppComponent implements OnInit {
     startGame() {
         this.game = true;
         let cell: Cell = this.getRandomCell();
-        this.field[cell.row][cell.col] = CLICKABLE_COLOR
+        this.field[cell.row][cell.col] = this.colors.clickableColor;
         this.clickTimer = setTimeout(_ => {
-            this.field[cell.row][cell.col] = COMP_COLOR;
-            this.compScore++;
-            if (this.compScore < 10) this.startGame(); else this.gameOver(false);
+            this.field[cell.row][cell.col] = this.colors.compColor;
+            this.scores = this.dataService.incScores(false);
+            if (this.scores.compScore < 10) this.startGame(); else this.gameOver(false);
         }, this.delay)
     }
 
     cellClicked(cell) {
         clearTimeout(this.clickTimer);
-        this.field[cell.row][cell.col] = PLAYER_COLOR
-        this.playerScore++;
-        if (this.playerScore < 10) this.startGame(); else this.gameOver(true)
+        this.field[cell.row][cell.col] = this.colors.playerColor;
+        this.scores = this.dataService.incScores(true);
+        if (this.scores.playerScore < 10) this.startGame(); else this.gameOver(true)
     }
 
 }
